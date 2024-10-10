@@ -326,7 +326,8 @@ class DBAcademyHelper:
 
         elif not self.lesson_config.create_catalog:
             # We are not creating a catalog, use teh default value
-            return dbh_constants.DBACADEMY_HELPER.CATALOG_UC_DEFAULT
+            # return dbh_constants.DBACADEMY_HELPER.CATALOG_UC_DEFAULT
+            return self.current_catalog()
 
         else:
             # If we are creating a catalog, we will use a user-specific catalog

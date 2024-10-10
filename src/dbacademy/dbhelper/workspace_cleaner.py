@@ -26,7 +26,8 @@ class WorkspaceCleaner:
         status = self._stop_all_streams() or status
 
         if self.__da.lesson_config.enable_ml_support:
-            status = self._drop_feature_store_tables(lesson_only=True) or status
+            # status = self._drop_feature_store_tables(lesson_only=True) or status
+            status = self._drop_feature_engineering_tables(lesson_only=True) or status
             status = self._cleanup_mlflow_endpoints(lesson_only=True) or status
             status = self._cleanup_mlflow_models(lesson_only=True) or status
             status = self._cleanup_experiments(lesson_only=True) or status
@@ -51,7 +52,8 @@ class WorkspaceCleaner:
         self._stop_all_streams()
 
         if self.__da.lesson_config.enable_ml_support:
-            self._drop_feature_store_tables(lesson_only=False)
+            # self._drop_feature_store_tables(lesson_only=False)
+            self._drop_feature_engineering_tables(lesson_only=False)
             self._cleanup_mlflow_endpoints(lesson_only=False)
             self._cleanup_mlflow_models(lesson_only=False)
             self._cleanup_experiments(lesson_only=False)
@@ -247,6 +249,35 @@ class WorkspaceCleaner:
                 name = table.get("name")
                 print(f"| Dropping feature store table \"{name}\"")
                 feature_store.FeatureStoreClient().drop_table(name)
+        finally:
+            logger.disabled = logger_disabled
+
+        return True
+    
+    def _drop_feature_engineering_tables(self, lesson_only: bool) -> bool:
+        import logging
+        # noinspection PyPackageRequirements
+        from databricks import feature_engineering
+
+        schema = self.__da.schema_name if lesson_only else self.__da.schema_name_prefix
+        catalog = self.__da.catalog_name if lesson_only else self.__da.catalog_name_prefix
+        feature_engineering_tables = self.__da.client.ml.feature_engineering.search_tables(schema, catalog)
+
+        if len(feature_engineering_tables) == 0:
+            return False  # No tables, nothing to drop
+
+        logger = logging.getLogger("databricks.feature_engineering._compute_client._compute_client")
+        logger_disabled = logger.disabled
+        logger.disabled = True
+
+        try:
+            for table in feature_engineering_tables:
+                table_name = table.get("name")
+                schema_name = table.get("schema")
+                catalog_name = table.get("catalog")
+                full_name = f"{catalog_name}.{schema_name}.{table_name}"
+                print(f"| Dropping feature store table \"{full_name}\"")
+                feature_engineering.client.FeatureEngineeringClient().drop_table(full_name)
         finally:
             logger.disabled = logger_disabled
 
