@@ -29,7 +29,7 @@ class UniversalWorkspaceSetupRunner:
         if Cloud.current_cloud().is_aws:
             self.__pools_node_type_id = "i3.xlarge"
         elif Cloud.current_cloud().is_msa:
-            self.__pools_node_type_id = "Standard_D4ds_v4"
+            self.__pools_node_type_id = "Standard_D4ds_v5"
         elif Cloud.current_cloud().is_gcp:
             self.__pools_node_type_id = "n2-highmem-4"
         else:
