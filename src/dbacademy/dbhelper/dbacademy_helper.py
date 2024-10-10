@@ -33,7 +33,7 @@ class DBAcademyHelper:
         from dbacademy.dbhelper.validations import ValidationHelper
         from dbacademy.dbhelper.paths import Paths
 
-        self.__validate_uws()
+        # self.__validate_uws()
 
         self.__lesson_config = validate(_lesson_config=_lesson_config).required.as_type(LessonConfig)
         self.__lesson_config.assert_valid()
