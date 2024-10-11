@@ -16,12 +16,14 @@ class FeatureEngineeringApi(ApiContainer):
         maxsize = 50
         results = []
 
-        response = self.__client.api("GET", f"{self.base_uri}/tables/search?max_results={maxsize}&catalog_name={catalog}&schema_name={schema}")
+        response = self.__client.api("GET", f"{self.base_uri}/tables?max_results={maxsize}&catalog_name={catalog}&schema_name={schema}")
+        print(f"response: {response}")
         results.extend(response.get("tables", []))
+        print(f"results: {results}")
 
         while "next_page_token" in response:
             next_page_token = response["next_page_token"]
-            response = self.__client.api("GET", f"{self.base_uri}/tables/search?max_results={maxsize}&catalog_name={catalog}&schema_name={schema}&page_token={next_page_token}")
+            response = self.__client.api("GET", f"{self.base_uri}/tables?max_results={maxsize}&catalog_name={catalog}&schema_name={schema}&page_token={next_page_token}")
             results.extend(response.get("tables", []))
 
         return results
