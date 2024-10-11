@@ -273,8 +273,8 @@ class WorkspaceCleaner:
         try:
             for table in feature_engineering_tables:
                 table_name = table.get("name")
-                schema_name = table.get("schema")
-                catalog_name = table.get("catalog")
+                schema_name = table.get("schema_name")
+                catalog_name = table.get("catalog_name")
                 full_name = f"{catalog_name}.{schema_name}.{table_name}"
                 print(f"| Dropping feature store table \"{full_name}\"")
                 feature_engineering.client.FeatureEngineeringClient().drop_table(full_name)
